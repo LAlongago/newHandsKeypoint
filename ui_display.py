@@ -13,6 +13,13 @@ class UIDisplay:
         self.window_name = "Hand Gesture Recognition"
 
     def show(self, frame, results, results_body, gestures):
+        for result_c in results_body:
+            keypoints = result_c.keypoints.xy[0]
+            for i, (x, y) in enumerate(keypoints):
+                cv2.circle(frame, (int(x), int(y)), 3, point_color, -1)  # 绘制关键点
+                cv2.putText(frame, str(i + 1), (int(x) + 5, int(y) - 5), font, font_scale, point_color,
+                            thickness)  # 标注序号
+
         for result_b in results_body:
             keypoints = result_b.keypoints.xy[0]
             for i, (x, y) in enumerate(keypoints):
@@ -32,6 +39,8 @@ class UIDisplay:
                 cv2.putText(frame, "Choose Detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             elif gesture == "sitting":
                 cv2.putText(frame, "Sitting Detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            elif gesture == "running":
+                cv2.putText(frame, "Running Detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         cv2.imshow(self.window_name, frame)
 
