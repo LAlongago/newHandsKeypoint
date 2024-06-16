@@ -30,6 +30,8 @@ class UIDisplay:
         for gesture in gestures:
             if gesture == "choose":
                 cv2.putText(frame, "Choose Detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            elif gesture == "sitting":
+                cv2.putText(frame, "Sitting Detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         cv2.imshow(self.window_name, frame)
 
