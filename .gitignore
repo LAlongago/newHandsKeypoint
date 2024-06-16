@@ -1,0 +1,7 @@
+/data/
+/results/
+/hands_keypoint_model_s/
+/inference_onnx.py
+/yolov8l-pose.onnx
+/yolov8s-pose.onnx
+/yolov8s-pose.pt
