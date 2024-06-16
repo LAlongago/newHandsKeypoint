@@ -4,7 +4,6 @@ from pose_detection_body import PoseDetectionBody
 from gesture_recognition import GestureRecognition
 from ui_display import UIDisplay
 import config
-import time
 
 
 def main():
@@ -13,7 +12,7 @@ def main():
     pose_detection = PoseDetection(config.HAND_MODEL_PATH)
     pose_detection_body = PoseDetectionBody(config.BODY_MODEL_PATH)
     gesture_recognition = GestureRecognition()
-    ui_display = UIDisplay()
+    ui_display = UIDisplay(video_capture.get_fps(), video_capture.get_frame_height(), video_capture.get_frame_width())
 
     while True:
         # 获取一帧图像
@@ -21,14 +20,13 @@ def main():
         if frame is None:
             break
 
-        current_frame_time = time.time()  # 当前帧的时间
-
         # 进行关键点检测
         results = pose_detection.detect(frame)
         results_body = pose_detection_body.detect(frame)
 
         # 进行手势识别
-        gestures = gesture_recognition.recognize(results, results_body, current_frame_time)
+        gestures = gesture_recognition.recognize(results, results_body)
+
         # 显示结果
         ui_display.show(frame, results, results_body, gestures)
 

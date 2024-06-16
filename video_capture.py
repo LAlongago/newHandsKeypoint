@@ -12,5 +12,14 @@ class VideoCapture:
         else:
             return None
 
+    def get_fps(self):
+        return self.cap.get(cv2.CAP_PROP_FPS)
+
+    def get_frame_width(self):
+        return int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+
+    def get_frame_height(self):
+        return int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
     def release(self):
         self.cap.release()
