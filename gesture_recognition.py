@@ -29,7 +29,7 @@ class GestureRecognition:
         self.previous_finger_tip = None
         self.stationary_start_time = None
 
-    def recognize(self, results):
+    def recognize(self, results, results_body):
         gestures = []
         for result in results:
             result = result.cpu()
@@ -43,6 +43,14 @@ class GestureRecognition:
                     gestures.append("choose")
             else:
                 self.stationary_start_time = None
+
+        for result_b in results_body:
+            result_b = result_b.cpu()
+            if result_b.keypoints is None or result_b.keypoints.xy is None or result_b.keypoints.conf is None:
+                continue
+            keypoints = result_b.keypoints.xy[0]
+
+
         return gestures
 
     def is_index_finger_pointing(self, finger_tip):
