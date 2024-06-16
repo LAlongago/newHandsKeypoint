@@ -60,14 +60,18 @@ class UIDisplay:
         y_position = 50
         for gesture, position in self.active_gestures.items():
             text = ""
-            if gesture == "choose":
-                text = "Choose Detected"
+            if gesture == "paper":
+                text = "Paper Detected"
+            if gesture == "rock":
+                text = "Rock Detected"
             elif gesture == "sitting begin":
                 text = "Sitting Begin Detected"
             elif gesture == "sitting":
                 text = "Sitting Detected"
             elif gesture == "waving":
                 text = "Waving Detected"
+            elif gesture == "running":
+                text = "Running Detected"
 
             cv2.putText(frame, text, (50, y_position), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             y_position += 30  # 增加 y 坐标，以便在下一行显示
