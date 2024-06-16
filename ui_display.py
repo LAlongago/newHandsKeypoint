@@ -68,6 +68,8 @@ class UIDisplay:
                 text = "Sitting Detected"
             elif gesture == "waving":
                 text = "Waving Detected"
+            elif gesture == "running":
+                text = "Running Detected"
 
             cv2.putText(frame, text, (50, y_position), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             y_position += 30  # 增加 y 坐标，以便在下一行显示
