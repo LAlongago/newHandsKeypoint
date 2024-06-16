@@ -98,34 +98,35 @@ class GestureRecognition:
         return distance < 50  # 设定阈值为50像素
 
     def is_sitting(self, keypoints):
+        left_shoulder = keypoints[body_map["left_shoulder"]]
         left_knee = keypoints[body_map["left_knee"]]
         right_knee = keypoints[body_map["right_knee"]]
-        left_ankle = keypoints[body_map["left_ankle"]]
-        right_ankle = keypoints[body_map["right_ankle"]]
         left_hip = keypoints[body_map["left_hip"]]
         right_hip = keypoints[body_map["right_hip"]]
-        base_distance = np.linalg.norm(left_hip - left_knee)
+        base_distance = np.linalg.norm(left_hip - left_shoulder)
 
-        if np.abs(left_hip[1] - left_knee[1]) < 0.6 * base_distance and np.abs(right_hip[1] - right_knee[1]) < 0.6 * base_distance:
+        if np.abs(left_hip[1] - left_knee[1]) < 0.4 * base_distance and np.abs(right_hip[1] - right_knee[1]) < 0.4 * base_distance:
             return True
 
     def is_waving(self, keypoints):
+        left_hip = keypoints[body_map["left_hip"]]
+        left_shoulder = keypoints[body_map["left_shoulder"]]
         left_wrist = keypoints[body_map["left_wrist"]]
         right_wrist = keypoints[body_map["right_wrist"]]
         left_elbow = keypoints[body_map["left_elbow"]]
         right_elbow = keypoints[body_map["right_elbow"]]
         nose = keypoints[body_map["nose"]]
-        base_distance = np.linalg.norm(left_elbow - left_wrist)
+        base_distance = np.linalg.norm(left_hip - left_shoulder)
 
         # 把手举到鼻子附近来激活判断
-        if np.abs(left_wrist[1] - nose[1]) < 0.6 * base_distance:
+        if np.abs(left_wrist[1] - nose[1]) < 0.25 * base_distance:
             self.using_wrist = "left"
-        elif np.abs(right_wrist[1] - nose[1]) < 0.6 * base_distance:
+        elif np.abs(right_wrist[1] - nose[1]) < 0.25 * base_distance:
             self.using_wrist = "right"
         else:
             return False
 
-        if np.abs(left_wrist[0] - nose[0]) > base_distance and np.abs(right_wrist[0] - nose[0]) > base_distance:
+        if np.abs(left_wrist[1] - nose[1]) > base_distance and np.abs(right_wrist[0] - nose[0]) > base_distance:
             self.using_wrist = None
             self.previous_wrist = None
             return False
@@ -136,4 +137,4 @@ class GestureRecognition:
         distance = np.linalg.norm(keypoints[body_map[f"{self.using_wrist}_wrist"]] - self.previous_wrist)
         speed = distance / (1 / 30) # 帧率为30
         self.previous_wrist = keypoints[body_map[f"{self.using_wrist}_wrist"]]
-        return speed > 5
+        return speed > 20
