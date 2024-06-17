@@ -6,10 +6,10 @@ import os
 # 加载训练好的YOLOv8l pose模型
 print(torch.cuda.is_available())
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model = YOLO("yolov8l-pose.pt")
+model = YOLO("hands_keypoint_model_l/best.pt")
 
 # 定义视频文件路径
-video_path = 1
+video_path = r"data/test/test10.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # 获取视频帧率
@@ -46,16 +46,17 @@ while cap.isOpened():
             if result.keypoints is None or result.keypoints.xy is None or result.keypoints.conf is None:
                 continue
 
-            keypoints = result.keypoints.xy[0]  # 获取第一个检测对象的关键点坐标
-            confs = result.keypoints.conf[0]  # 获取第一个检测对象的关键点置信度
+            keypoints_list = result.keypoints.xy  # 获取所有检测对象的关键点坐标
+            confs_list = result.keypoints.conf  # 获取所有检测对象的关键点置信度
 
-            # 绘制关键点及其序号和置信度
-            for i, (x, y) in enumerate(keypoints):
-                cv2.circle(frame, (int(x), int(y)), 3, point_color, -1)  # 绘制关键点
-                cv2.putText(frame, str(i + 1), (int(x) + 5, int(y) - 5), font, font_scale, point_color,
-                            thickness)  # 标注序号
-                cv2.putText(frame, str(round(confs[i].item(), 2)), (int(x) + 5, int(y) + 15), font, font_scale,
-                            point_color, thickness)  # 标注置信度
+            for keypoints, confs in zip(keypoints_list, confs_list):
+                # 绘制关键点及其序号和置信度
+                for i, (x, y) in enumerate(keypoints):
+                    cv2.circle(frame, (int(x), int(y)), 3, point_color, -1)  # 绘制关键点
+                    cv2.putText(frame, str(i + 1), (int(x) + 5, int(y) - 5), font, font_scale, point_color,
+                                thickness)  # 标注序号
+                    cv2.putText(frame, str(round(confs[i].item(), 2)), (int(x) + 5, int(y) + 15), font, font_scale,
+                                point_color, thickness)  # 标注置信度
 
         # 显示带有关键点的帧
         cv2.imshow("YOLOv8 Pose Inference", frame)

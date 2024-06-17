@@ -58,14 +58,21 @@ class GestureRecognition:
             result = result.cpu()
             if result.keypoints is None or result.keypoints.xy is None or result.keypoints.conf is None:
                 continue
-            keypoints = result.keypoints.xy[0]
 
-            # 检查手掌是否完全打开
-            if self.is_hand_open(keypoints):
-                gestures.append("paper")
+            keypoints_list = result.keypoints.xy  # 获取所有检测对象的关键点坐标
 
-            if self.is_rock_gesture(keypoints):
-                gestures.append("rock")
+            for keypoints in keypoints_list:
+                if self.is_hand_open(keypoints):
+                    gestures.append("paper")
+
+                if self.is_rock_gesture(keypoints):
+                    gestures.append("rock")
+
+        # if self.is_hand_open(keypoints):
+            #     gestures.append("paper")
+            #
+            # if self.is_rock_gesture(keypoints):
+            #     gestures.append("rock")
 
             # if self.is_index_finger_pointing(keypoints[finger_map["index_finger_tip"]]):
             #     if self.stationary_start_time is None:
@@ -95,6 +102,14 @@ class GestureRecognition:
 
             if self.is_running(keypoints_b):
                 gestures.append("running")
+                if abs(keypoints_b[body_map["left_knee"]][1] - keypoints_b[body_map["right_knee"]][1]) < 0.2 * np.linalg.norm(
+                        keypoints_b[body_map["left_hip"]] - keypoints_b[body_map["left_shoulder"]]):
+                    if self.stationary_start_time is None:
+                        self.stationary_start_time = time.time()
+                    elif time.time() - self.stationary_start_time > 1:
+                        gestures.append("stopped")
+                else:
+                    self.stationary_start_time = None
 
         return gestures
 
@@ -227,12 +242,15 @@ class GestureRecognition:
         right_hip = keypoints[body_map["right_hip"]]
         base_distance = np.linalg.norm(keypoints[body_map["left_hip"]] - keypoints[body_map["left_shoulder"]])
 
-        if left_hip[1] < left_knee[1] or right_hip[1] < right_knee[1]:
+        if left_hip[1] > left_knee[1] or right_hip[1] > right_knee[1]:
+            print("hip higher than knee")
             return False
 
         if left_knee is None:
+            print("left knee is None")
             return False
         if right_knee is None:
+            print("right knee is None")
             return False
 
         if self.previous_left_knee is None:
@@ -247,4 +265,4 @@ class GestureRecognition:
         self.previous_right_knee = right_knee
         left_speed = left_distance / (1 / 30)
         right_speed = right_distance / (1 / 30)
-        return left_speed > 0.1 and right_speed > 0.1
+        return left_speed > 2 and right_speed > 2

@@ -31,6 +31,12 @@ class UIDisplay:
         self.frame_count += 1
         current_time = self.frame_count / self.fps  # 计算当前时间（秒）
 
+        running = 0
+        if "running" in gestures:
+            running = 1
+        if "stopped" in gestures:
+            running = 0
+
         # 清空旧的显示字典
         self.active_gestures.clear()
 
@@ -44,13 +50,16 @@ class UIDisplay:
 
         # 处理手部关键点
         for result in results:
-            keypoints = result.keypoints.xy[0]
-            for i, (x, y) in enumerate(keypoints):
-                cv2.circle(frame, (int(x), int(y)), 3, point_color, -1)  # 绘制关键点
-                cv2.putText(frame, str(i + 1), (int(x) + 5, int(y) - 5), font, font_scale, point_color,
-                            thickness)  # 标注序号
+            keypoints_list = result.keypoints.xy
+            for keypoints in keypoints_list:
+                for i, (x, y) in enumerate(keypoints):
+                    cv2.circle(frame, (int(x), int(y)), 3, point_color, -1)  # 绘制关键点
+                    cv2.putText(frame, str(i + 1), (int(x) + 5, int(y) - 5), font, font_scale, point_color,
+                                thickness)  # 标注序号
 
         # 更新当前活跃的手势
+        if running:
+            gestures.append("running")
         for gesture in gestures:
             if gesture not in self.active_gestures:
                 self.active_gestures[gesture] = len(self.active_gestures) + 1

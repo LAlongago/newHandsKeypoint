@@ -28,7 +28,7 @@ def main():
         results_body = pose_detection_body.detect(frame)
 
         # 进行手势识别
-        gestures = gesture_recognition.recognize(results, results_body, current_frame_time)
+        gestures = gesture_recognition.recognize(results, results_body)
         # 显示结果
         ui_display.show(frame, results, results_body, gestures)
 
